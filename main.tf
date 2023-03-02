@@ -41,14 +41,14 @@ resource "aws_security_group" "prometheus_sg" {
   vpc_id =  var.vpc_id
   ingress {
     description = "ingress rules"
-    cidr_blocks = [var.cidr_block]
+    cidr_blocks = [var.vpc_cidr_block]
     from_port = 22
     protocol = "tcp"
     to_port = 22
   }
   ingress {
     description = "ingress rules"
-    cidr_blocks = [var.cidr_block]
+    cidr_blocks = [var.vpc_cidr_block]
     from_port = 9090
     protocol = "tcp"
     to_port = 9090
