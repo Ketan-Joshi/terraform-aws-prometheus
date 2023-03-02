@@ -26,7 +26,6 @@ resource "aws_instance" "prometheus" {
   subnet_id = var.subnet_id
   disable_api_termination = true
   vpc_security_group_ids = [aws_security_group.prometheus_sg.id]
-  
   # associate_public_ip_address = true
   ebs_block_device {
     device_name = "/dev/xvda"
