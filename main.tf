@@ -11,6 +11,14 @@ resource "aws_key_pair" "ssh_key" {
   }
 }
 
+data "template_file" "userdata" {
+  template = file("${path.module}/prometheus_userdata.sh")
+  vars = {
+    kubernetes_cluster_endpoint     = var.kubernetes_cluster_endpoint
+    kubernetes_cluster_token        = var.kubernetes_cluster_token
+  }
+}
+
 resource "aws_instance" "prometheus" {
   ami = "ami-0b5eea76982371e91"
   instance_type = var.instance_type_prometheus 
@@ -24,7 +32,7 @@ resource "aws_instance" "prometheus" {
     device_name = "/dev/xvda"
     volume_size = var.volume_size_prometheus
   }
-  user_data = file("${path.module}/prometheus.sh")
+  user_data = data.template_file.userdata.rendered
   depends_on = [
     aws_key_pair.ssh_key
   ]

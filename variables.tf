@@ -33,3 +33,13 @@ variable "subnet_id" {
     type        = string
     default     = ""
 }
+variable "kubernetes_cluster_endpoint" {
+    description = "This defines Kubernetes Cluster Endpoint whom Prometheus will Connect"
+    type        = string
+    default     = ""
+}
+variable "kubernetes_cluster_token" {
+    description = "This defines Kubernetes Cluster Service Account Token"
+    type        = string
+    default     = ""
+}

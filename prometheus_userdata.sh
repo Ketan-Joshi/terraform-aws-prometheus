@@ -36,6 +36,10 @@ cp -r consoles /etc/prometheus
 cp -r console_libraries /etc/prometheus
 #cp /tmp/prometheus.yml /etc/prometheus/prometheus.yml
 
+cat <<EOF >>/etc/prometheus/token
+$kubernetes_cluster_token
+EOF
+
 cat <<EOF >>/etc/prometheus/prometheus.yml
 global:
   scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
@@ -58,7 +62,7 @@ scrape_configs:
     metrics_path: '/metrics'
     scheme: 'http'
     kubernetes_sd_configs:
-      - api_server: 'https://AC9A1CE44BEBE2F279819A6C6FA5EB8C.sk1.us-east-1.eks.amazonaws.com'
+      - api_server: '$kubernetes_cluster_endpoint'
         role: 'pod'
         bearer_token_file: '/etc/prometheus/token'
         tls_config:
@@ -106,7 +110,7 @@ scrape_configs:
   # Scrape config for kubernetes service endpoints.
   - job_name: 'kubernetes-service-endpoints'
     kubernetes_sd_configs:
-      - api_server: 'https://AC9A1CE44BEBE2F279819A6C6FA5EB8C.sk1.us-east-1.eks.amazonaws.com'
+      - api_server: '$kubernetes_cluster_endpoint'
         role: 'endpoints'
         bearer_token_file: '/etc/prometheus/token'
         tls_config:

@@ -6,4 +6,6 @@ module "prometheus" {
     environment = "qa"
     vpc_cidr_block = ""
     vpc_id = ""
+    kubernetes_cluster_endpoint = "https://AC9A1CE44BEBE2F279819A6C6FA5EB8C.sk1.us-east-1.eks.amazonaws.com"
+    kubernetes_cluster_token = ""
 }
