@@ -39,7 +39,6 @@ resource "aws_instance" "prometheus" {
     Name = "nw-social-monitoring-${var.environment}"
   }
 }
-
 resource "aws_security_group" "prometheus_sg" {
   name = "nw-social-monitoring-${var.environment}-sg"
   vpc_id =  var.vpc_id
