@@ -3,14 +3,14 @@ resource "tls_private_key" "ssh_private_key" {
   rsa_bits  = 4096
 }
 resource "aws_key_pair" "ssh_key" {
-  key_name   = var.key_name
+  key_name   = var.pem_key_name
   public_key = tls_private_key.ssh_private_key.public_key_openssh
-  provisioner "local-exec" { # This will create "prometheus.pem" where the terraform will run!!
-    command = "rm -f ./prometheus.pem && echo '${tls_private_key.ssh_private_key.private_key_pem}' > ./prometheus.pem && chmod 400 prometheus.pem"
+  provisioner "local-exec" { # This will create the pem where the terraform will run!!
+    command = "rm -f ./${var.pem_key_name}.pem && echo '${tls_private_key.ssh_private_key.private_key_pem}' > ./${var.pem_key_name}.pem && chmod 400 ${var.pem_key_name}.pem"
   }
 }
 data "template_file" "userdata" {
-  template = file("${path.module}/prometheus_userdata.sh")
+  template = file("${path.module}/prometheus.sh")
   vars = {
     kubernetes_cluster_endpoint     = var.kubernetes_cluster_endpoint
     kubernetes_cluster_token        = var.kubernetes_cluster_token
@@ -19,7 +19,7 @@ data "template_file" "userdata" {
 resource "aws_instance" "prometheus" {
   ami = "ami-0b5eea76982371e91"
   instance_type = var.instance_type_prometheus 
-  key_name = var.key_name
+  key_name = var.pem_key_name
   subnet_id = var.subnet_id
   disable_api_termination = true
   vpc_security_group_ids = [aws_security_group.prometheus_sg.id]

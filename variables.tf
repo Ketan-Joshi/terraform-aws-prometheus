@@ -8,8 +8,8 @@ variable "volume_size_prometheus" {
     type        = number
     default     = "30"
 }
-variable "key_name" {
-    description = "This defines Prometheus Instance Pem Key Name"
+variable "pem_key_name" {
+    description = "This defines Pem Key Name"
     type        = string
     default     = ""
 }
