@@ -5,8 +5,8 @@ variable "instance_type_prometheus" {
 }
 variable "volume_size_prometheus" {
     description = "This defines Prometheus Instance Root Volume Size"
-    type        = string
-    default     = ""
+    type        = number
+    default     = "30"
 }
 variable "key_name" {
     description = "This defines Prometheus Instance Pem Key Name"
