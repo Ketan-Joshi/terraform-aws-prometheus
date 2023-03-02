@@ -1,5 +1,5 @@
 module "prometheus" {
-    source = "./module"
+    source = "git::https://github.com/Ketan-Joshi/terraform-aws-prometheus.git"
     instance_type_prometheus = "t3.medium"
     volume_size_prometheus = "30"
     key_name = "nw-prometheus"
