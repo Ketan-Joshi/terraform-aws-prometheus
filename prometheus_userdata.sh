@@ -6,10 +6,9 @@ sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 echo "ssm done"
 
-PROMETHEUS_VERSION="2.2.1"
-wget https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
-tar -xzvf prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
-cd prometheus-${PROMETHEUS_VERSION}.linux-amd64/
+wget https://github.com/prometheus/prometheus/releases/download/v2.2.1/prometheus-2.2.1.linux-amd64.tar.gz
+tar -xzvf prometheus-2.2.1.linux-amd64.tar.gz
+cd prometheus-2.2.1.linux-amd64/
 # if you just want to start prometheus as root
 #./prometheus --config.file=prometheus.yml
 
