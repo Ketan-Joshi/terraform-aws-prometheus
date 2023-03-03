@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# Environment Variables
+kube_cluster_token=${kube_cluster_token}
+kube_cluster_endpoint=${kube_cluster_endpoint}
+
+echo $kube_cluster_token
+echo $kube_cluster_endpoint
+
+# Installation
 yum update -y
 cd /tmp
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
@@ -36,7 +45,7 @@ cp -r console_libraries /etc/prometheus
 #cp /tmp/prometheus.yml /etc/prometheus/prometheus.yml
 
 cat <<EOF >>/etc/prometheus/token
-$kubernetes_cluster_token
+$kube_cluster_token
 EOF
 
 cat <<EOF >>/etc/prometheus/prometheus.yml
@@ -61,7 +70,7 @@ scrape_configs:
     metrics_path: '/metrics'
     scheme: 'http'
     kubernetes_sd_configs:
-      - api_server: '$kubernetes_cluster_endpoint'
+      - api_server: '$kube_cluster_endpoint'
         role: 'pod'
         bearer_token_file: '/etc/prometheus/token'
         tls_config:
@@ -109,7 +118,7 @@ scrape_configs:
   # Scrape config for kubernetes service endpoints.
   - job_name: 'kubernetes-service-endpoints'
     kubernetes_sd_configs:
-      - api_server: '$kubernetes_cluster_endpoint'
+      - api_server: '$kube_cluster_endpoint'
         role: 'endpoints'
         bearer_token_file: '/etc/prometheus/token'
         tls_config:

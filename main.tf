@@ -12,13 +12,14 @@ resource "aws_key_pair" "ssh_key" {
 data "template_file" "userdata" {
   template = file("${path.module}/prometheus.sh")
   vars = {
-    kubernetes_cluster_endpoint     = var.kubernetes_cluster_endpoint
-    kubernetes_cluster_token        = var.kubernetes_cluster_token
+    kube_cluster_endpoint     = var.kube_cluster_endpoint
+    kube_cluster_token        = var.kube_cluster_token
   }
 }
 resource "aws_instance" "prometheus" {
   ami = "ami-0b5eea76982371e91"
-  instance_type = var.instance_type_prometheus 
+  instance_type = var.instance_type_prometheus
+  user_data = data.template_file.userdata.rendered
   key_name = var.pem_key_name
   subnet_id = var.subnet_id
   disable_api_termination = true
@@ -28,7 +29,6 @@ resource "aws_instance" "prometheus" {
     device_name = "/dev/xvda"
     volume_size = var.volume_size_prometheus
   }
-  user_data = data.template_file.userdata.rendered
   depends_on = [
     aws_key_pair.ssh_key
   ]
