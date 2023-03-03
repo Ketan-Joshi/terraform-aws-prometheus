@@ -6,6 +6,7 @@ module "prometheus" {
     environment = "qa"
     vpc_cidr_block = ""
     vpc_id = ""
+    subnet_id = ""
     kube_cluster_endpoint = ""
     kube_cluster_token = ""
 }
