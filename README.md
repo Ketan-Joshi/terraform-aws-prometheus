@@ -30,6 +30,7 @@ Example Usages
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.72 |
+| <a name="provider_template"></a> [template](#provider\_template) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
 ## Modules
@@ -44,6 +45,7 @@ No modules.
 | [aws_key_pair.ssh_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
 | [aws_security_group.prometheus_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [tls_private_key.ssh_private_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [template_file.userdata](https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
@@ -51,9 +53,11 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_environment"></a> [environment](#input\_environment) | This defines the Environment Tag | `string` | `""` | no |
 | <a name="input_instance_type_prometheus"></a> [instance\_type\_prometheus](#input\_instance\_type\_prometheus) | This defines Prometheus Instance Size/Type | `string` | `""` | no |
-| <a name="input_key_name"></a> [key\_name](#input\_key\_name) | This defines Prometheus Instance Pem Key Name | `string` | `""` | no |
+| <a name="input_kubernetes_cluster_endpoint"></a> [kubernetes\_cluster\_endpoint](#input\_kubernetes\_cluster\_endpoint) | This defines Kubernetes Cluster Endpoint whom Prometheus will Connect | `string` | `""` | no |
+| <a name="input_kubernetes_cluster_token"></a> [kubernetes\_cluster\_token](#input\_kubernetes\_cluster\_token) | This defines Kubernetes Cluster Service Account Token | `string` | `""` | no |
+| <a name="input_pem_key_name"></a> [pem\_key\_name](#input\_pem\_key\_name) | This defines Pem Key Name | `string` | `""` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | This defines Prometheus Instance VPC Subnet ID | `string` | `""` | no |
-| <a name="input_volume_size_prometheus"></a> [volume\_size\_prometheus](#input\_volume\_size\_prometheus) | This defines Prometheus Instance Root Volume Size | `number` | `""` | no |
+| <a name="input_volume_size_prometheus"></a> [volume\_size\_prometheus](#input\_volume\_size\_prometheus) | This defines Prometheus Instance Root Volume Size | `number` | `"30"` | no |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | This defines Prometheus Instance VPC CIDR Block | `string` | `""` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | This defines Prometheus Instance VPC ID | `string` | `""` | no |
 
