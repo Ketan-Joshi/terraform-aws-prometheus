@@ -42,11 +42,6 @@ chown prometheus:prometheus /usr/local/bin/promtool
 # copy config
 cp -r consoles /etc/prometheus
 cp -r console_libraries /etc/prometheus
-#cp /tmp/prometheus.yml /etc/prometheus/prometheus.yml
-
-cat <<EOF >>/etc/prometheus/token
-$kube_cluster_token
-EOF
 
 cat <<EOF >>/etc/prometheus/prometheus.yml
 global:
@@ -72,10 +67,9 @@ scrape_configs:
     kubernetes_sd_configs:
       - api_server: '$kube_cluster_endpoint'
         role: 'pod'
-        bearer_token_file: '/etc/prometheus/token'
+        bearer_token: '$kube_cluster_token'
         tls_config:
           insecure_skip_verify: true
-    bearer_token_file: '/etc/prometheus/token'
     tls_config:
       insecure_skip_verify: true
     relabel_configs:
@@ -120,10 +114,9 @@ scrape_configs:
     kubernetes_sd_configs:
       - api_server: '$kube_cluster_endpoint'
         role: 'endpoints'
-        bearer_token_file: '/etc/prometheus/token'
+        bearer_token: '$kube_cluster_token'
         tls_config:
           insecure_skip_verify: true
-    bearer_token_file: '/etc/prometheus/token'
     tls_config:
       insecure_skip_verify: true
     relabel_configs:
@@ -165,20 +158,20 @@ scrape_configs:
         replacement: \$1
         action: replace
 
-          #- source_labels: [__meta_kubernetes_endpoints_name]
-          #regex: 'kube-dns'
-          #action: drop
-          #target_label: node-exporter
+        #- source_labels: [__meta_kubernetes_endpoints_name]
+        #regex: 'kube-dns'
+        #action: drop
+        #target_label: node-exporter
+        
+        #- source_labels: [__meta_kubernetes_endpoints_name]
+        #regex: 'node-exporter'
+        #action: keep
+        #target_label: node-exporter
 
-          #- source_labels: [__meta_kubernetes_endpoints_name]
-          #regex: 'node-exporter'
-          #action: keep
-          #target_label: node-exporter
-
-          #- source_labels: [__meta_kubernetes_endpoints_name]
-          #regex: (.*kube-state-metrics)
-          #action: keep
-          #target_label: kube-state-metrics
+        #- source_labels: [__meta_kubernetes_endpoints_name]
+        #regex: (.*kube-state-metrics)
+        #action: keep
+        #target_label: kube-state-metrics
 EOF
 
 chown -R prometheus:prometheus /etc/prometheus/consoles
