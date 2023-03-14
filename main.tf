@@ -23,6 +23,7 @@ resource "aws_instance" "prometheus" {
   key_name = var.pem_key_name
   subnet_id = var.subnet_id
   disable_api_termination = true
+  iam_instance_profile = aws_iam_instance_profile.rds_log_instance_profile.name
   vpc_security_group_ids = [aws_security_group.prometheus_sg.id]
   # associate_public_ip_address = true
   ebs_block_device {
@@ -30,7 +31,7 @@ resource "aws_instance" "prometheus" {
     volume_size = var.volume_size_prometheus
   }
   depends_on = [
-    aws_key_pair.ssh_key
+    aws_key_pair.ssh_key,aws_iam_role.rds_log
   ]
   tags = {
     Name = "nw-social-monitoring-${var.environment}"
@@ -63,4 +64,92 @@ resource "aws_security_group" "prometheus_sg" {
   tags = {
     Name = "nw-social-monitoring-${var.environment}-sg"
   }
+}
+resource "aws_iam_role" "rds_log" {
+  name = "rds_log-${var.environment}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+    {
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }
+   ]
+  })
+}
+resource "aws_iam_role_policy_attachment" "rds_log_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess"
+  role = aws_iam_role.rds_log.name
+}
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+  role = aws_iam_role.rds_log.name
+}
+resource "aws_iam_policy" "rds_log_policy" {
+  name    = "rds_log_policy-${var.environment}"
+  description = "Policy for RDS logs access"
+  policy   = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+    {
+      Sid = "AllowReadingMetricsFromCloudWatch",
+      Effect = "Allow",
+      Action = [
+        "cloudwatch:DescribeAlarmsForMetric",
+        "cloudwatch:DescribeAlarmHistory",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:ListMetrics",
+        "cloudwatch:GetMetricData",
+        "cloudwatch:GetInsightRuleReport"
+      ],
+      Resource = "*"
+    },
+    {
+      Sid = "AllowReadingLogsFromCloudWatch",
+      Effect = "Allow",
+      Action = [
+        "logs:DescribeLogGroups",
+        "logs:GetLogGroupFields",
+        "logs:StartQuery",
+        "logs:StopQuery",
+        "logs:GetQueryResults",
+        "logs:GetLogEvents"
+     ],
+      Resource = "*"
+    },
+    {
+      Sid = "AllowReadingTagsInstancesRegionsFromEC2",
+      Effect = "Allow",
+      Action = [
+        "ec2:DescribeTags",
+        "ec2:DescribeInstances",
+        "ec2:DescribeRegions"
+     ],
+      Resource = "*"
+    },
+    {
+      Sid = "AllowReadingResourcesForTags",
+      Effect = "Allow",
+      Action = "tag:GetResources",
+      Resource = "*"
+    }
+   ]
+  })
+}
+resource "aws_iam_policy_attachment" "rds_log_policy_attachment" {
+  policy_arn = aws_iam_policy.rds_log_policy.arn
+  roles   = [aws_iam_role.rds_log.name]
+}
+resource "aws_iam_instance_profile" "rds_log_instance_profile" {
+  name = "rds_log_instance_profile-${var.environment}"
+  roles = [aws_iam_role.rds_log.name]
+}
+resource "aws_instance" "example" {
+ ami      = "ami-0c55b159cbfafe1f0"
+ instance_type = "t2.micro"
+
+ iam_instance_profile = aws_iam_instance_profile.rds_log_instance_profile.name
 }
