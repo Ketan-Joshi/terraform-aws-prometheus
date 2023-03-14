@@ -86,5 +86,5 @@ resource "aws_iam_role_policy_attachment" "ssm_policy" {
 }
 resource "aws_iam_instance_profile" "ssm_access_instance_profile" {
   name = "monitoring-ssm-access-instance-profile-${var.environment}"
-  roles = [aws_iam_role.ssm_access.name]
+  roles = aws_iam_role.ssm_access.name
 }
