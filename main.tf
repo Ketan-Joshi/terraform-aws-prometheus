@@ -88,3 +88,7 @@ resource "aws_iam_instance_profile" "ssm_access_instance_profile" {
   name = "monitoring-ssm-access-instance-profile-${var.environment}"
   role = aws_iam_role.ssm_access.name
 }
+resource "aws_iam_role_policy_attachment" "cw_agent_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role = aws_iam_role.ssm_access.name
+}
