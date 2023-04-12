@@ -150,6 +150,36 @@ scrape_configs:
         replacement: '\$1'
         action: 'replace'
 
+  - job_name: kubernetes-cadvisor
+    scrape_interval: 60s
+    scrape_timeout: 60s
+    metrics_path: '/metrics'
+    scheme: 'http'
+    tls_config:
+        insecure_skip_verify: true
+    kubernetes_sd_configs:
+    - api_server: '$kube_cluster_endpoint'
+      role: endpoints
+      bearer_token: '$kube_cluster_token'
+      tls_config:
+        insecure_skip_verify: true
+    relabel_configs:
+      - separator: ;
+        regex: __meta_kubernetes_node_label_(.+)
+        replacement: '\$1'
+        action: labelmap
+      - source_labels: [__address__]
+        separator: ;
+        regex: ([^:]+)(?::\d+)?
+        target_label: __address__
+        replacement: '\$1:8080'
+        action: replace
+      - separator: ;
+        regex: (.*)
+        target_label: __metrics_path__
+        replacement: /metrics
+        action: replace
+
   # Scrape config for kubernetes service endpoints.
   - job_name: 'kubernetes-service-endpoints'
     kubernetes_sd_configs:
@@ -166,8 +196,7 @@ scrape_configs:
         action: keep
         regex: true
       # Check for the prometheus.io/port=<port> annotation.
-      - source_labels: [__address__,
-                        __meta_kubernetes_service_annotation_prometheus_io_port]
+      - source_labels: [__address__,__meta_kubernetes_service_annotation_prometheus_io_port]
         action: replace
         target_label: __address__
         # A google/re2 regex, matching addresses with or without default ports.
@@ -180,10 +209,12 @@ scrape_configs:
         regex: __meta_kubernetes_service_label_(.+)
       # Add the kubernetes namespace as a Prometheus label.
       - source_labels: [__meta_kubernetes_namespace]
+        regex: (.*)
         action: replace
         target_label: kubernetes_namespace
       # Add the kubernetes service name as a Prometheus label.
-      - source_labels: [__meta_kubernetes_service_name]
+        source_labels: [__meta_kubernetes_service_name]
+        regex: (.*)
         action: replace
         target_label: kubernetes_service
       - source_labels: [__meta_kubernetes_pod_name]
@@ -198,21 +229,10 @@ scrape_configs:
         target_label: container
         replacement: \$1
         action: replace
-
-        #- source_labels: [__meta_kubernetes_endpoints_name]
-        #regex: 'kube-dns'
-        #action: drop
-        #target_label: node-exporter
-        
-        #- source_labels: [__meta_kubernetes_endpoints_name]
-        #regex: 'node-exporter'
-        #action: keep
-        #target_label: node-exporter
-
-        #- source_labels: [__meta_kubernetes_endpoints_name]
-        #regex: (.*kube-state-metrics)
-        #action: keep
-        #target_label: kube-state-metrics
+      - source_labels: [__meta_kubernetes_endpoints_name]
+        regex: (.*)
+        action: keep
+        target_label: endpoints
 EOF
 
 chown -R prometheus:prometheus /etc/prometheus/consoles
